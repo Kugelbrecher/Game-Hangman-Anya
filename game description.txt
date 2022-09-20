@@ -1,0 +1,42 @@
+Game Name: Hangman
+
+Basic elements:
+- title: Hangman - Save Anya!
+- 26 keys (A-Z)
+- Attempts left (0 out of 6)
+- Word to guess (with blanks)
+
+Other required elements:
+- Score during the game:
+    - set score to be the time (timeInterval) it takes to guess the word successfully,
+        starting when the user clicks on a key and ending when the user guesses the word correctly.
+    - If the user guesses the word incorrectly, the score is set to ??? (not sure what to do here)
+    - How to determine the score:
+        - the smaller the score, the better
+        - OR convert timeInterval to another estimation of score
+- Difficulty:
+    - set difficulty to be the number of letters in the word to guess.
+        For example, if the word to guess is "hangman", the difficulty is 7.
+    - Does it to be the unique number of words?
+    - Adjust the difficulty through: 1. the number of letters in the word to guess, 2. provide a hint
+- Score history panel:
+    - display the best score
+    - display the historical score
+- Cookies
+    - metrics are stored as cookies or in local storage
+
+Personalization:
+- Background:
+    - The SPYxFAMILY consists of four family members:
+        - The spy father Loid Forger is disguised as a psychologist
+        - The assassinator mother Yor Forger is disguised as a civil servant at Berlint City Hall
+        - The adopted daughter Anya Forger has the super power of reading minds
+        - The pet dog Bond Forger can foresee the future
+    - One day their enemies found out their secret and kidnapped the daughter Anya.
+        You, who is a neighbor of them, will use a hangman game to save the family.
+    - When you correctly guessed a letter, mother behaves like a normal mother,
+        otherwise you guessed a word incorrectly, mother switched to the assassinator mode.
+    - When all attempts are used and you still cannot guess the word, the lovely Anya will be killed by
+        the enemies. Otherwise you save the family and help them reunion, president Henry Henderson will
+        say "Elegant! Very elegant!"
+    - When there is a hint, click super dog to receive a hint.

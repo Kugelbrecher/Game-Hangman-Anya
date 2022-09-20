@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hangman Anya</title>
+
+    <!-- Bootstrap 4 CDN -->
+    <!-- the link seems expired   -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
+    <!-- no framework version -->
+
+</head>
+
+<body>
+
+<!--change class and id names-->
+<div class="container">
+    <h1 class="text-center">Hangman: Save Anya !</h1>
+
+    <div class="float-right">Wrong Guesses: <span id="usedAttempt">0</span> of <span id="totalAttempt"></span></div>
+
+    <div class="text-center">
+        <img id="hangmanPic" src="images/hang1.jpg" alt="image broken" width="400" height="500">
+        <p>Guess the word:</p>
+        <p id="wordSpotlight">The word to be guessed goes here</p>
+        <p>Guess a letter:</p>
+        <!-- we can use a generateButtons function in js file-->
+        <div id="keyboard"></div>
+        <button class="btn btn-info" onClick="reset()">Reset</button>
+    </div>
+
+</div>
+
+<!--some function does not work if i put this in front, why?-->
+<script src="hangman.js"></script>
+</body>
+</html>
