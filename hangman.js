@@ -1,40 +1,103 @@
-/*Hangman Anya
-This program is a game of hangman. The user is given 6 chances to guess the word. If the user guesses the word
-correctly, the user wins. If the user does not guess the word correctly, the user loses.
-
-The program uses the following functions:
-1. getRandomWord() - This function gets a random word from the array of words, player should try to guess it.
-2. displayWord() - This function displays the word with the letters guessed correctly and the letters not guessed
-   correctly as underscores.
-3. getGuess() - This function gets the user's guess.
-4. checkGuess() - This function checks if the user's guess is correct.
-5. checkWin() - This function checks if the user has won the game.
-6. checkLose() - This function checks if the user has lost the game.
-*/
 
 
-/*
-Is it possible to have a list of lists of words OR dictionary? So that player can choose the category of the word?
-*/
-var fruits = ["apple", "banana", "orange", "grape", "watermelon", "strawberry", "blueberry", "pineapple", "kiwi", "mango"];
-var firms = ["meta", "google", "amazon", "apple", "microsoft", "netflix", "uber", "airbnb", "tesla", "robinhood"];
-var programming_language = ["python", "java", "javascript", "ruby", "swift", "php", "perl", "c"];
+// dictionary of words
+var categoryList=['fruit','country', 'firm','programming']
+var fruit=['apple','banana','orange','grape','watermelon','strawberry','blueberry','pineapple','kiwi','mango',
+    'peach','pear','plum','cherry','lemon','lime','coconut','apricot','avocado','blackberry','blackcurrant','boysenberry',
+    'cantaloupe','clementine','cranberry','currant','date','dragonfruit','durian','fig','gooseberry','grapefruit','guava'];
+var country = ["china", "america", "japan", "india", "germany", "france", "russia", "brazil", "canada", "australia",
+    "argentina", "bahrain", "belgium", "bolivia", "botswana", "bulgaria", "cambodia", "cameroon", "chile", "colombia",
+    "croatia", "cuba", "cyprus", "denmark", "ecuador", "egypt", "estonia", "ethiopia", "finland", "greece", "guatemala",
+    "honduras", "hungary", "iceland", "indonesia", "iran", "iraq"];
+var firm = ["meta", "google", "amazon", "apple", "microsoft", "netflix", "uber", "airbnb", "tesla", "robinhood",
+    "facebook", "twitter", "linkedin", "instagram", "snapchat", "tiktok", "wechat", "whatsapp", "alibaba", "baidu",
+    "tencent", "jd", "didi", "xiaomi", "sina", "sogou", "bilibili", "pinduoduo", "tiktok", "discord"];
+var programming = ["python", "java", "javascript", "ruby", "swift", "php", "perl", "c",
+    "go", "scala", "kotlin", "rust", "haskell", "clojure", "erlang", "elixir", "lisp", "prolog",
+    "fortran", "cobol", "pascal", "ada", "d", "dart", "groovy", "lua", "matlab", "delphi", "visual basic",
+    "r", "sas", "sql", "assembly", "bash", "html", "css", "xml", "json", "yaml", "markdown", "latex", "vim",
+    "emacs", "git", "svn", "mercurial", "docker", "kubernetes", "aws", "azure", "gcp", "tensorflow", "pytorch",
+    "keras", "caffe", "pandas", "numpy", "matplotlib", "seaborn", "bokeh", "plotly", "d3",
+    "flask", "django", "spring", "express", "rails", "sinatra", "tornado", "pyramid", "bottle", "web2py"];
 
 var answer = '';
+var answerType = '';
+var wrongAttempt = 0;
 var totalAttempt = 6;
-var usedAttempt = 0;
 var guessed = [];
 var wordStatus = null;
+var difficulty = 3; // initial at 3, 1~10total  3:20%~30%  1:0%~10%  10:90%~100%
 
-
-// get a random word from list of words/dictionary
-function getRandomWord() {
-    const randomIndex = Math.floor(Math.random() * fruits.length);
-    answer = fruits[randomIndex];
-    // return answer; // do i need this return?
-    // alert(fruits[randomIndex]); // used to see the answer when checking the code
+// user behavior, local storage
+var startTime
+var endTime
+var score = 0;
+var timeCounter = 0;
+var gameStatus={
+    highestScore:0,
+    clickTimes:0,
+    // timeCounter:0,
+    // gameHistory:[]
+}
+var _gameStatus = getLocalstorageItem('gameStatus');
+if(_gameStatus){
+    gameStatus = _gameStatus;
 }
 
+
+// get a random category
+function getEffectiveArray() {
+    var categoryIndex = Math.floor(Math.random() * categoryList.length);
+
+    // var wordsList = categoryList[categoryIndex];
+    var wordsList = window[categoryList[categoryIndex]];
+    // console.log(wordsList);
+    /*
+    wordsList is an array of words as a result of the window command,
+    it converts a string into a variable name: categoryList[categoryIndex] is a string, not an array
+    */
+
+    // if all words are used, select another category
+    if (wordsList.length===0){
+        // call back the function itself
+        getEffectiveArray();
+    }else{
+        return {
+            wordsList: wordsList,
+            categoryIndex: categoryIndex
+            // or simply
+            // wordsList, categoryIndex
+            // and note that keys can be different from the local variable names
+
+        }
+    }
+}
+
+function getRandomWord() {
+    var wordsListInfo = getEffectiveArray();
+    var wordsList = wordsListInfo.wordsList;
+    // console.log(wordsList);
+    var categoryIndex = wordsListInfo.categoryIndex;
+    // console.log(categoryIndex);
+    // another way:
+    // var {wordsList,categoryIndex} = getEffectiveArray()
+
+    // sort the words by length, from short to long
+    // https://www.w3schools.com/js/js_array_sort.asp - sort() with a compare function for strings
+    wordsList = wordsList.sort(function(a,b){
+        return a.length-b.length;
+    })
+
+    // get a random difficulty level, select a word from the corresponding index in wordsLists
+    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
+    // pay attention the inclusive and not inclusive - (max-min+1) + min vs. (max-min) + min
+    var randomNum = Math.random() * (difficulty * 0.1 - (difficulty - 1) * 0.1) + (difficulty - 1) * 0.1;
+    var index = Math.round(randomNum * wordsList.length);
+    answer = wordsList[index];
+    answerType = categoryList[categoryIndex];
+    console.log(answer);
+    // console.log(answerType);
+}
 
 // generate the keyboard
 // function generateButtons() {
@@ -51,16 +114,16 @@ function getRandomWord() {
 //         keyboard.appendChild(button);
 //     }
 // }
-// // OR
-function generateButtons() {
-    let buttonsHTML = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(letter =>
+// OR
+function generateKeyboard() {
+    let buttonsHTML = 'abcdefghijklmnopqrstuvwxyz'.split('').map(letter =>
         `
       <button
         class="btn btn-lg btn-primary m-2"
         id='` + letter + `'
-        onClick="handleGuess('` + letter + `')"
+        onClick="mainGame('` + letter + `')"
       >
-        ` + letter + `
+        ` + letter.toUpperCase() + `
       </button>
     `).join('');
 
@@ -68,126 +131,176 @@ function generateButtons() {
 }
 
 // displays the word with the letters guessed correctly o.w. underscores
-function guessedWord() {
-    // indexOf() check if the letter we guessed is in the word
-    // this method returns the first index at which a given element can be found in the array,
-    // or -1 if it is not present.
-    // ? is a ternary operator
-    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Conditional_Operator
-    // join() to avoid commas
+function guessedLettersDisplay() {
+    // why does NOT work if wordStatus is an empty string or array instead of null?
+    wordStatus = answer.split('').map(letter => {
+        if (guessed.indexOf(letter) >= 0) {
+            return letter;
+        } else {
+            return " _ ";
+        }
+    }).join('');
+    // console.log(wordStatus);
+    /*
+    another way to write the same thing:
     wordStatus = answer.split('').map(letter => (guessed.indexOf(letter) >= 0 ? letter : " _ ")).join('');
-    document.getElementById("wordSpotlight").innerHTML = wordStatus;
-    // why do we need to specify wordStatus to be null instead of an empty string? difference between variable answer?
+    indexOf() check if the letter we guessed is in the word, returns the first index at which a given element
+    can be found in the array, or -1 if it is not present.
+    ? is a ternary operator
+    https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Conditional_Operator
+    */
+    document.getElementById("wordArea").innerHTML = wordStatus;
 }
-// // OR
-// function displayWord(word, guesses) {
-//     var display = "";
-//     for (var i = 0; i < word.length; i++) {
-//         if (guesses.indexOf(word[i]) >= 0) {
-//             display += word[i];
-//         } else {
-//             display += "_";
-//         }
-//     }
-//     return display;
-// }
 
-function handleGuess(letter) {
-    // if the letter is not in the guesses list, add it to the list/push it to the list
-    // if the letter is in the guesses list, do nothing / null
-    
-    // create a list of underscores that has the same length as the random word?
-    // how to interpret this in terms of IF/ELSE?
+function mainGame(letter) {
+    // count times interval starting from the first click?
+    if (guessed.length===0){
+        startTime  = new Date().getTime()
+    }
+
+    // guessed is an array of letters that have been guessed, disable the button
     guessed.indexOf(letter) === -1 ? guessed.push(letter) : null;
-    // setAttribute() https://www.w3schools.com/jsref/met_element_setattribute.asp
-    // 'disabled' will disable the button independent of the value
-    // https://stackoverflow.com/questions/7526601/setattributedisabled-false-changes-editable-attribute-to-false
+    // console.log(guessed);
+    // https://bobbyhadz.com/blog/javascript-set-attribute-disabled
     document.getElementById(letter).setAttribute('disabled', true);
-    
-    // if the guessed letter is in the word, run the guessedWord() function to update letters
+    // get the number of clicks
+    gameStatus.clickTimes = guessed.length;
+    // console.log(clickTimes);
+    document.getElementById('clicks').innerHTML = gameStatus.clickTimes;
+
+    // if the guessed letter is in the word, run the guessedLettersDisplay() function to update letters
     if (answer.indexOf(letter) >= 0) {
-        guessedWord();
+        guessedLettersDisplay();
         checkWon();
     // if the letter is not in the word, add to the wrong guesses
     } else if (answer.indexOf(letter) === -1) {
-        usedAttempt++;
-        // if we use react, we can use setState() to update the usedAttempt
-        updateusedAttempt();
-        checkLose();
+        wrongAttempt++;
+        // if we use react, we can use setState() to update the wrongAttempt
+        updateWrongAttempt();
         updateHangmanPicture();
-    } // else {
-    //     console.log("error");
-    // }
+        checkLose();
+    }
 }
 
 function updateHangmanPicture() {
-    document.getElementById('hangmanPic').src = 'images/hang' + usedAttempt + '.jpg';
+    document.getElementById('hangmanPic').src = 'images/hang' + wrongAttempt + '.jpg';
+}
+
+function updateWrongAttempt() {
+    document.getElementById('wrongAttempt').innerHTML = wrongAttempt;
+}
+
+function updateScore() {
+    document.getElementById('score').innerHTML = score;
+}
+
+function updateHighestScore() {
+    if (gameStatus.highestScore < score) {
+        gameStatus.highestScore = score;
+        document.getElementById('highestScore').innerHTML = gameStatus.highestScore;
+    }
 }
 
 function checkWon() {
     if (wordStatus === answer) {
         document.getElementById('keyboard').innerHTML = 'You Saved Anya!';
         document.getElementById('hangmanPic').src = 'images/win.jpg';
+
+        score++;
+        updateScore();
+        updateHighestScore();
+
+        if (difficulty<10) difficulty++;
+        setLocalstorageItem('gameStatus',gameStatus)
+        removeWordFromArray()
+        endTime = new Date().getTime()
+        timeCounter = (endTime - startTime)/1000
+        document.getElementById("timeCounter").innerHTML = timeCounter + 's';
+        // addNewGameData('win')
     }
 }
 
 function checkLose() {
-    if (usedAttempt === totalAttempt) {
-        document.getElementById('wordSpotlight').innerHTML = 'The answer was: ' + answer;
+    if (wrongAttempt === totalAttempt) {
+        document.getElementById('wordArea').innerHTML = 'The answer was: ' + answer;
         document.getElementById('keyboard').innerHTML = 'Anya is dead!';
         document.getElementById('hangmanPic').src = 'images/lose.jpg';
+        if (difficulty>1) difficulty--
+        removeWordFromArray()
+        endTime = new Date().getTime()
+        gameStatus.timeCounter = Math.round((endTime - startTime)/1000)
+        document.getElementById("timeCounter").innerHTML = gameStatus.timeCounter + 's';
+        // addNewGameData('lose')
+        // setLocalstorageItem('gameStatus',gameStatus)
     }
 }
-// function checkWin(word, guesses) {
-//     for (var i = 0; i < word.length; i++) {
-//         if (guesses.indexOf(word[i]) < 0) {
-//             return false;
-//         }
-//     }
-//     return true;
-// }
-//
-// function checkLose(guesses) {
-//     if (guesses.length >= 6) {
-//         return true;
-//     } else {
-//         return false;
-//     }
+
+// function addNewGameData(result) {
+//     gameStatus.gameHistory.push({
+//         word: answer,
+//         time: Math.round((endTime - startTime)/1000),
+//         clicks: gameStatus.clickTimes,
+//         result: result
+//     })
+//     setLocalstorageItem('gameStatus',gameStatus)
 // }
 
-
-// update the number of wrong guesses, and the picture if guessed a wrong letter
-function updateusedAttempt() {
-    document.getElementById('usedAttempt').innerHTML = usedAttempt;
-    // document.getElementById('hangmanPic').src = './images/' + attemptsUsed + '.jpg'; //already in handleGuess()
+// generate a hint for the word
+function hint() {
+    var hint = answerType;
+    document.getElementById("hint").innerHTML = ": " + hint;
 }
-
-
 
 function reset() {
-    usedAttempt = 0;
+    wrongAttempt = 0;
     guessed = [];
-    document.getElementById('hangmanPic').src = 'images/hang1.jpg';
+    document.getElementById('hangmanPic').src = 'images/hang0.jpg';
+    document.getElementById('clicks').innerHTML = '0';
+    document.getElementById('hint').innerHTML = '';
 
-    // reset the keyboard, word to be guessed, and the number of wrong guesses
     getRandomWord();
-    guessedWord();
-    updateusedAttempt();
-    generateButtons();
+    guessedLettersDisplay();
+    updateWrongAttempt();
+    generateKeyboard();
 }
 
+document.getElementById("highestScore").innerHTML = gameStatus.highestScore;
 document.getElementById("totalAttempt").innerHTML = totalAttempt;
-// call this generateButtons() function to show keyboard on web
-    // call the getRandomWord() function
-getRandomWord();
-generateButtons();
-guessedWord();
 
+
+// remove the word from the array, so that it will not appear again unless refresh the page
+function removeWordFromArray() {
+    var index = window[answerType].indexOf(answer);
+    if (index > -1) {
+        window[answerType].splice(index, 1);
+    }
+}
+
+getRandomWord();
+generateKeyboard();
+guessedLettersDisplay();
 
 /*
-Other things to do:
-1. fix code
-2. add records for time count
-3. provide choices of difficulty (choose a word category OR get a hint)
-4. add game description
-*/
+* local storage里面只能存字符串，所以要先把对象转成字符串，然后存储，取出来的时候再转回对象
+* check in console: JSON.stringify(gameStatus)
+* */
+function setLocalstorageItem(key, value) {
+    localStorage.setItem(key, JSON.stringify(value));
+}
+
+function getLocalstorageItem(key) {
+    return JSON.parse(localStorage.getItem(key));
+}
+
+
+// Object.defineProperty(gameStatus, 'score', {
+//     set(newScore){
+//         document.getElementById('score').innerHTML = newScore;
+//     }
+//
+// })
+// 这个是一个高级的es6的方法，监听一个数据，当数据发生变化的时候，会自动执行里面的函数
+// 这样的话我们可以统一管理所有数据的变化，比如说我们可以在这里面写一个函数，当分数发生变化的时候，我们可以把分数存储到local storage里面
+// 涉及到的知识点：es6的Object.defineProperty()方法，以及local storage的使用
+// 涉及模式：观察者模式/发布订阅模式
+// 现在换成了proxy的方法，因为proxy的方法更加简单，而且更加容易理解
