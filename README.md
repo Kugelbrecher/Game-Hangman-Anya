@@ -1,6 +1,6 @@
 ## Game Project Description
 
-![](images/hangmanAnya.png = 50*50)
+![](images/hangmanAnya.png = 50x50)
 
 This game is hosted on Surge and you can access it here:
 hanmanAnya.surge.sh
