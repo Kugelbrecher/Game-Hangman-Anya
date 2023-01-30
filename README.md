@@ -1,17 +1,9 @@
-## Game Description
+## Game Project Description
 
-For grading TA: check console for the correct word if you need.
+![](images/hangmanAnya.png)
 
-### Host On Surge
-Running as xuezhan@rice.edu (Student)
-
-         domain: xuezhansun-hangman-Anya.surge.sh
-         upload: [====================] 100% eta: 0.0s (15 files, 5878216 bytes)
-            CDN: [====================] 100%
-     encryption: *.surge.sh, surge.sh (237 days)
-             IP: 138.197.235.123
-
-Success! - Published to xuezhansun-hangman-Anya.surge.sh
+This game is hosted on Surge and you can access it here:
+hanmanAnya.surge.sh
 
 
 ### Hangman: Save Anya
@@ -37,7 +29,6 @@ You have 6 chances to choose a wrong letter. Once you have used up all 6 chances
 
 When you finish one round of game, you can click the `Play Again` button to play another round.
 This means, the game will not end until you refresh or reload the page.
-
 
 ### Player Behaviors
 - cummulative score: 

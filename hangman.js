@@ -1,5 +1,3 @@
-
-
 // dictionary of words
 var categoryList=['fruit','country', 'firm','programming']
 var fruit=['apple','banana','orange','grape','watermelon','strawberry','blueberry','pineapple','kiwi','mango',
@@ -83,7 +81,6 @@ function getRandomWord() {
     // var {wordsList,categoryIndex} = getEffectiveArray()
 
     // sort the words by length, from short to long
-    // https://www.w3schools.com/js/js_array_sort.asp - sort() with a compare function for strings
     wordsList = wordsList.sort(function(a,b){
         return a.length-b.length;
     })
@@ -99,22 +96,6 @@ function getRandomWord() {
     // console.log(answerType);
 }
 
-// generate the keyboard
-// function generateButtons() {
-//     var keyboard = document.getElementById("keyboard");
-//     var letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-//     for (var i = 0; i < letters.length; i++) {
-//         var letter = letters[i];
-//         var button = document.createElement("button");
-//         button.innerHTML = letter;
-//         button.onclick = function() {
-//             // alert the letter that was clicked
-//             alert(this.innerHTML);
-//         }
-//         keyboard.appendChild(button);
-//     }
-// }
-// OR
 function generateKeyboard() {
     let buttonsHTML = 'abcdefghijklmnopqrstuvwxyz'.split('').map(letter =>
         `
@@ -132,7 +113,6 @@ function generateKeyboard() {
 
 // displays the word with the letters guessed correctly o.w. underscores
 function guessedLettersDisplay() {
-    // why does NOT work if wordStatus is an empty string or array instead of null?
     wordStatus = answer.split('').map(letter => {
         if (guessed.indexOf(letter) >= 0) {
             return letter;
@@ -141,19 +121,11 @@ function guessedLettersDisplay() {
         }
     }).join('');
     // console.log(wordStatus);
-    /*
-    another way to write the same thing:
-    wordStatus = answer.split('').map(letter => (guessed.indexOf(letter) >= 0 ? letter : " _ ")).join('');
-    indexOf() check if the letter we guessed is in the word, returns the first index at which a given element
-    can be found in the array, or -1 if it is not present.
-    ? is a ternary operator
-    https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Conditional_Operator
-    */
     document.getElementById("wordArea").innerHTML = wordStatus;
 }
 
 function mainGame(letter) {
-    // count times interval starting from the first click?
+    // count times interval starting from the first click
     if (guessed.length===0){
         startTime  = new Date().getTime()
     }
@@ -281,7 +253,6 @@ generateKeyboard();
 guessedLettersDisplay();
 
 /*
-* local storage里面只能存字符串，所以要先把对象转成字符串，然后存储，取出来的时候再转回对象
 * check in console: JSON.stringify(gameStatus)
 * */
 function setLocalstorageItem(key, value) {
@@ -293,14 +264,3 @@ function getLocalstorageItem(key) {
 }
 
 
-// Object.defineProperty(gameStatus, 'score', {
-//     set(newScore){
-//         document.getElementById('score').innerHTML = newScore;
-//     }
-//
-// })
-// 这个是一个高级的es6的方法，监听一个数据，当数据发生变化的时候，会自动执行里面的函数
-// 这样的话我们可以统一管理所有数据的变化，比如说我们可以在这里面写一个函数，当分数发生变化的时候，我们可以把分数存储到local storage里面
-// 涉及到的知识点：es6的Object.defineProperty()方法，以及local storage的使用
-// 涉及模式：观察者模式/发布订阅模式
-// 现在换成了proxy的方法，因为proxy的方法更加简单，而且更加容易理解
